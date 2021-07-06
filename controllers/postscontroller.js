@@ -1,7 +1,7 @@
 const Express = require('express');
 const router = Express.Router();
-const validateSession = require('../middleware/validate-Session');
-const { PostsModel } = require('../models');
+const validateSession = require('../middleware/validate-session');
+const { models } = require('../models');
 
 //TESTING ROUTER//
 
@@ -10,43 +10,73 @@ router.get('/practice', validateSession, (req,res) => {
 });
 
 //CREATING NEW POSTS//
-router.post('/create', validateSession, async (req, res) => {
-    const { title, date, sign, entry } = req.body.posts;
-    const { id } = req.user;
-    const postsEntry = {
-        title,
-        date,
-        sign, 
-        entry,
-        owner: id
-    }
+router.post('/create', async (req, res) => {
+    const { title, date, sign, entry } = req.body.post;
+    //const { id } = req.user;
+
     try {
-        const newPosts = await PostsModel.create(postsEntry);
-        res.status(200).json(newPosts);
+        await models.PostsModel.create({
+            title: title,
+            date: date,
+            sign: sign,
+            entry: entry,
+            // owner: id,
+            userId: req.user.id
+        })
+        .then (
+            post => {
+                res.status(201).json({
+                    post: post,
+                    message: 'post created'
+                });
+            }
+        )
     } catch (err) {
-        res.status(500).json({ error: err });
-    }
-    PostsModel.create(postsEntry)
+        res.status(500).json({
+            error: `Failed to create post: ${ err }`
+        });
+    };
 });
+
+
+// router.post('/create', validateSession, async (req, res) => {
+//     const { title, date, sign, entry } = req.body.posts;
+//     const { id } = req.user;
+//     const postsEntry = {
+//         title,
+//         date,
+//         sign, 
+//         entry,
+//         owner: id
+//     }
+//     try {
+//         const newPosts = await models.PostsModel.create(postsEntry);
+//         res.status(200).json(newPosts);
+//     } catch (err) {
+//         res.status(500).json({ error: err });
+//     }
+//     models.create(postsEntry)
+// });
 
 
 //GET ALL POSTS//
 router.get('/all', async (req, res) => {
     try {
-        const entries = await PostsModel.findAll();
+        const entries = await models.PostsModel.findAll();
         res.status(200).json(entries);
     } catch (err) {
         res.status(500).json({ error: err });
     }
 });
 
-//GET POSTS BY USER//
-router.get('/user-posts', validateSession, async (req, res) => {
-    let { id } = req.user;
+//GET POSTS BY DATE//
+
+router.get('/:date', validateSession, async (req, res) => {
+    let { date } = req.params;
     try {
-        const userPosts = await PostsModel.findAll({
+        const userPosts = await models.PostsModel.findAll({
             where: {
-                owner: id
+                date: date
             }
         });
         res.status(200).json(userPosts);
@@ -56,10 +86,10 @@ router.get('/user-posts', validateSession, async (req, res) => {
 })
 
 //GET POSTS BY SIGN//
-router.get('/:sign', validateSession, async (req, res) => {
+router.get('/sign/:sign', validateSession, async (req, res) => {
     let { sign } = req.params;
-    try{
-        const userPosts = await PostsModel.findAll({
+    try {
+        const userPosts = await models.PostsModel.findAll({
             where: {
                 sign: sign
             }
@@ -90,7 +120,7 @@ router.put('/edit/:entryId', validateSession, async (req, res) => {
         entry: entry
     };
     try {
-        const update = await PostsModel.update(updatedPosts, query);
+        const update = await models.PostsModel.update(updatedPosts, query);
         res.status(200).json(update);
     } catch (err) {
         res.status(500).json({ error: err });
@@ -108,7 +138,7 @@ router.delete('/delete/:id', validateSession, async (req, res) => {
                 owner: ownerId
             }
         };
-        await PostsModel.destroy(query);
+        await models.destroy(query);
         res.status(200).json({ messagage: "Post entry deleted. "});
     } catch (err) {
         res.status(500).json({ error: err });

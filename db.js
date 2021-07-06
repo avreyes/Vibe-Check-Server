@@ -1,5 +1,11 @@
-const Sequelize = require('sequelize');
+const {Sequelize} = require('sequelize');
 
-const sequelize = new Sequelize('postgres://postgres:e3de2cd65c8241ac960a59fcfa5bb672@localhost:5432/Vibe-Check');
-
+const sequelize = new Sequelize(
+    process.env.DATABASE_NAME,
+    process.env.DATABASE_USERNAME,
+    process.env.DATABASE_PASSWORD,
+    {
+        host: process.env.DATABASE_HOST,
+        dialect: process.env.DATABASE_DIALECT
+    })
 module.exports = sequelize;

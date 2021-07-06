@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { UserModel } = require('../models');
+const { models } = require('../models');
 const { UniqueConstraintError } = require('sequelize/lib/errors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
     let { firstName, birthday, email, password, about, zodiac } = req.body.user;
 
     try {
-    const User = await UserModel.create({
+    const User = await models.UserModel.create({
         firstName,
         birthday,
         email,
@@ -49,44 +49,71 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    let { email, password } = req.body.user;
+    const { email, password } = req.body.user;
 
     try {
-        let loginUser = await UserModel.findOne ({
+        await models.UserModel.findOne ({
             where: {
-                email: email,
+                email: email
             },
-        });
-
-    if (loginUser) {
-
-        let passwordComparison = await bcrypt.compare(password, loginUser.password);
-
-        if (passwordComparison) {
-
-        let token = jwt.sign({id: loginUser.id}, process.env.JWT_SECRET, {expiresIn: 60 * 60 * 24});
-
-        res.status(200).json({
-            user: loginUser,
-            message: 'Successfully logged in!',
-            sessionToken: token
-        });
-    } else {
-        res.status(401).json({
-            message: 'Incorrect email or password'
+        })
+        .then (
+            user => {
+                if (user) {
+                    bcrypt.compare(password, user.password, (err, matches) => {
+                        if (matches) {
+                            let token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: 60*60*24 })
+                            res.json({
+                                user: user,
+                                message: 'logged in',
+                                sessionToken: `Bearer ${ token }`
+                            })
+                        } else {
+                            res.status(502).send({
+                                error: 'bad gateway'
+                            })
+                        }
+                    })
+                } else {
+                    res.status(500).send({
+                        error: 'failed to authenticate'
+                    })
+                }
+            }
+        )
+    } catch (err) {
+        res.status(501).send({
+            error: 'server does not support this functionality'
         })
     }
+})
 
-    } else {
-        res.status(401).json({
-            message: 'Incorrect email or password'
-        });
-    }
-    } catch (error) {
+router.get('/userinfo', async (req, res) => {
+    try {
+        await models.UserModel.findAll({
+            include: [
+                {
+                    model: models.PostsModel,
+                    include: [
+                        {
+                            model: models.CommentsModel
+                        }
+                    ]
+                }
+            ]
+        })
+        .then (
+            users => {
+                res.status(200).json({
+                    users: users
+                });
+            }
+        )
+    } catch (err) {
         res.status(500).json({
-            message: 'Failed to log user in'
-        })
-    }
+            error: `Failed to retrieve users: ${ err }`
+        });
+    };
 });
 
 
