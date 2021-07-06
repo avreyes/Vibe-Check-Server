@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { UserModel } = require('../models');
 
-const validateJWT = async (req, res, next) => {
+const validateSession = async (req, res, next) => {
     if (req.method == 'OPTIONS') {
         next();
     } else if (
@@ -35,4 +35,4 @@ const validateJWT = async (req, res, next) => {
     }
 };
 
-module.exports = validateJWT;
+module.exports = validateSession;

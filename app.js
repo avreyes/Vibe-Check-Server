@@ -15,7 +15,7 @@ const controllers = require('./controllers');
 
 app.use('/user', controllers.userController);
 
-app.use(require('./middleware/validate-jwt'));
+app.use(require('./middleware/validate-session'));
 app.use('/posts', controllers.postsController);
 
 dbConnection.authenticate()

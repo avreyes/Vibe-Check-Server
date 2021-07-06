@@ -1,3 +1,7 @@
 const UserModel = require('./user');
+const PostsModel = require('./posts');
 
-module.exports = {UserModel};
+module.exports = {
+    UserModel,
+    PostsModel
+};
