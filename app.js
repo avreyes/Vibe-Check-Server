@@ -15,8 +15,8 @@ const controllers = require('./controllers');
 
 app.use('/user', controllers.userController);
 
-app.use(require('./middleware/validate-session'));
 app.use('/posts', controllers.postsController);
+app.use(require('./middleware/validate-session'));
 
 dbConnection.authenticate()
     .then(() => dbConnection.sync())

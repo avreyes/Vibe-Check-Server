@@ -11,7 +11,7 @@ router.get('/practice', validateSession, (req,res) => {
 
 //CREATING NEW POSTS//
 router.post('/create', validateSession, async (req, res) => {
-    const { title, date, entry } = req.body.posts;
+    const { title, date, sign, entry } = req.body.posts;
     const { id } = req.user;
     const postsEntry = {
         title,
@@ -29,8 +29,9 @@ router.post('/create', validateSession, async (req, res) => {
     PostsModel.create(postsEntry)
 });
 
+
 //GET ALL POSTS//
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
     try {
         const entries = await PostsModel.findAll();
         res.status(200).json(entries);
@@ -40,7 +41,7 @@ router.get('/', async (req, res) => {
 });
 
 //GET POSTS BY USER//
-router.get('/id', validateSession, async (req, res) => {
+router.get('/user-posts', validateSession, async (req, res) => {
     let { id } = req.user;
     try {
         const userPosts = await PostsModel.findAll({
@@ -114,8 +115,7 @@ router.delete('/delete/:id', validateSession, async (req, res) => {
     }
 });
 
-
-
-
-
 module.exports = router;
+
+
+
