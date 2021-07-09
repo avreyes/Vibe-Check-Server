@@ -5,8 +5,9 @@ const validateSession = async (req, res, next) => {
     if (req.method == 'OPTIONS') {
         next();
     } else if (
-        req.headers.authorization &&
-        req.headers.authorization.includes('Bearer')
+        req.headers.authorization 
+        // req.headers.authorization &&
+        // req.headers.authorization.includes('Bearer')
     ) {
         const { authorization } = req.headers;
         // console.log('authorization -->', authorization);

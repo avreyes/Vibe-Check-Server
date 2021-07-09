@@ -5,9 +5,9 @@ const { models } = require('../models');
 
 //TESTING ROUTER//
 
-router.get('/practice', validateSession, (req,res) => {
-    res.send('Practice...')
-});
+// router.get('/practice', validateSession, (req,res) => {
+//     res.send('Practice...')
+// });
 
 //CREATING NEW POSTS//
 router.post('/create', async (req, res) => {
@@ -71,7 +71,7 @@ router.get('/all', async (req, res) => {
 
 //GET POSTS BY DATE//
 
-router.get('/:date', validateSession, async (req, res) => {
+router.get('/:date', validateSession.validateSession, async (req, res) => {
     let { date } = req.params;
     try {
         const userPosts = await models.PostsModel.findAll({
@@ -86,7 +86,7 @@ router.get('/:date', validateSession, async (req, res) => {
 })
 
 //GET POSTS BY SIGN//
-router.get('/sign/:sign', validateSession, async (req, res) => {
+router.get('/sign/:sign', validateSession.validateSession, async (req, res) => {
     let { sign } = req.params;
     try {
         const userPosts = await models.PostsModel.findAll({
@@ -101,7 +101,7 @@ router.get('/sign/:sign', validateSession, async (req, res) => {
 });
 
 //UPDATE POSTS//
-router.put('/edit/:entryId', validateSession, async (req, res) => {
+router.put('/edit/:entryId', validateSession.validateSession, async (req, res) => {
     const { title, date, sign, entry } = res.body.posts;
     const postsId = req.params.postsId;
     const userId = req.user.id;
@@ -128,7 +128,7 @@ router.put('/edit/:entryId', validateSession, async (req, res) => {
 });
 
 //DELETE A POST//
-router.delete('/delete/:id', validateSession, async (req, res) => {
+router.delete('/delete/:id', validateSession.validateSession, async (req, res) => {
     const ownerId = req.user.id;
     const postsId =  req.params.id;
     try {
