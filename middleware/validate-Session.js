@@ -3,11 +3,10 @@ const { models } = require('../models');
 
 const validateSession = async (req, res, next) => {
     if (req.method == 'OPTIONS') {
-        next();
+        return next()
     } else if (
-        req.headers.authorization 
-        // req.headers.authorization &&
-        // req.headers.authorization.includes('Bearer')
+        req.headers.authorization &&
+        req.headers.authorization.includes('Bearer')
     ) {
         const { authorization } = req.headers;
         // console.log('authorization -->', authorization);
@@ -21,13 +20,15 @@ const validateSession = async (req, res, next) => {
         // console.log('payload -->', payload);
 
         if (payload) {
-            let foundUser = await models.UserModel.findOne({ where: { id: payload.id } });
+            let foundUser = await models.UserModel.findOne({ 
+                where: { id: payload.id } 
+            });
             // console.log('foundUser -->', req);
 
             if (foundUser) {
                 req.user = foundUser;
                 // console.log('request -->', req);
-                next();
+                next()
             } else {
                 res.status(400).send({ message: "Not Authorized" });
             }
