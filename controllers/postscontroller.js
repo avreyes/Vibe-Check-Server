@@ -1,6 +1,6 @@
 const Express = require('express');
 const router = Express.Router();
-// const validateSession = require('../middleware');
+const validateSession = require('../middleware');
 const { models } = require('../models');
 
 //TESTING ROUTER//
@@ -71,8 +71,7 @@ router.get('/all', async (req, res) => {
 
 //GET POSTS BY DATE//
 
-router.get('/:date',  async (req, res) => {
-// router.get('/:date', validateSession.validateSession, async (req, res) => {
+router.get('/:date', validateSession.validateSession, async (req, res) => {
     let { date } = req.params;
     try {
         const userPosts = await models.PostsModel.findAll({
@@ -87,8 +86,8 @@ router.get('/:date',  async (req, res) => {
 })
 
 //GET POSTS BY SIGN//
-router.get('/sign/:sign', async (req, res) => {
-// router.get('/sign/:sign', validateSession.validateSession, async (req, res) => {
+
+router.get('/sign/:sign', validateSession.validateSession, async (req, res) => {
     let { sign } = req.params;
     try {
         const userPosts = await models.PostsModel.findAll({
@@ -103,8 +102,8 @@ router.get('/sign/:sign', async (req, res) => {
 });
 
 //UPDATE POSTS//
-router.put('/edit/:entryId', async (req, res) => {
-// router.put('/edit/:entryId', validateSession.validateSession, async (req, res) => {
+
+router.put('/edit/:entryId', validateSession.validateSession, async (req, res) => {
     const { title, date, sign, entry } = res.body.posts;
     const postsId = req.params.postsId;
     const userId = req.user.id;
@@ -131,8 +130,8 @@ router.put('/edit/:entryId', async (req, res) => {
 });
 
 //DELETE A POST//
-router.delete('/delete/:id', async (req, res) => {
-// router.delete('/delete/:id', validateSession.validateSession, async (req, res) => {
+
+router.delete('/delete/:id', validateSession.validateSession, async (req, res) => {
     const ownerId = req.user.id;
     const postsId =  req.params.id;
     try {

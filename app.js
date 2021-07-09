@@ -7,8 +7,8 @@ const middleware = require('./middleware');
 
 const app = express();
 
-app.use(middleware.CORS);
 app.use(express.json());
+app.use(middleware.CORS);
 
 
 
