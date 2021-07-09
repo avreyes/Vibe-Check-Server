@@ -34,7 +34,7 @@ try {
         });
     });
 } catch (err) {
-    console.log('[SERVER]: Server crashed');
+    console.log(`[SERVER]: Server crashed: ${ err }`);
     console.log(err);
 }
 

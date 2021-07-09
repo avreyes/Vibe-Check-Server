@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
     let { firstName, birthday, email, password, about, zodiac } = req.body.user;
 
     try {
-    const User = await models.UserModel.create({
+    const newUser = await models.UserModel.create({
         firstName,
         birthday,
         email,
@@ -28,11 +28,11 @@ router.post('/register', async (req, res) => {
         zodiac
     });
 
-    let token = jwt.sign({id: User.id}, process.env.JWT_SECRET, {expiresIn: 60 * 60 * 24});
+    let token = jwt.sign({id: newUser.id}, process.env.JWT_SECRET, {expiresIn: 60 * 60 * 24});
 
     res.status(201).json({
         message: 'Successfully registered, welcome!',
-        user: User,
+        user: newUser,
         sessionToken: token
     });
 } catch (err) {
@@ -52,41 +52,71 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body.user;
 
     try {
-        await models.UserModel.findOne ({
+        const User = await models.UserModel.findOne ({
             where: {
-                email: email
+                email: email,
             },
         })
-        .then (
-            user => {
-                if (user) {
-                    bcrypt.compare(password, user.password, (err, matches) => {
-                        if (matches) {
-                            let token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: 60*60*24 })
-                            res.json({
-                                user: user,
-                                message: 'logged in',
-                                sessionToken: `Bearer ${ token }`
-                            })
-                        } else {
-                            res.status(502).send({
-                                error: 'bad gateway'
-                            })
-                        }
-                    })
-                } else {
-                    res.status(500).send({
-                        error: 'failed to authenticate'
-                    })
-                }
+
+        if(User) {
+            let passwordComparison = await bcrypt.compare(password, User.password);
+            if(passwordComparison) {
+                const token = jwt.sign(
+                    {id: User.id,},
+                    process.env.JWT_SECRET,
+                    {expiresIn: 60 * 60 * 24}
+                )
+                res.status(200).json({
+                    user: User,
+                    message: 'Log in successful!',
+                    sessionToken: `Bearer ${ token }`
+                });
+            } else {
+                res.status(401).json({
+                    message: 'Incorrect email or password'
+                });
             }
-        )
+        } else {
+            res.status(401).json({
+                message: 'Incorrect email or password'
+            })
+        }
     } catch (err) {
-        res.status(501).send({
-            error: 'server does not support this functionality'
+        res.status(500).json({
+            message: 'Failed to log in'
         })
     }
-})
+});
+//         .then (
+//             user => {
+//                 if (user) {
+//                     bcrypt.compare(password, user.password, (err, matches) => {
+//                         if (matches) {
+//                             let token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: 60*60*24 })
+//                             res.json({
+//                                 user: user,
+//                                 message: 'logged in',
+//                                 sessionToken: `Bearer ${ token }`
+//                             })
+//                         } else {
+//                             res.status(502).send({
+//                                 error: 'bad gateway'
+//                             })
+//                         }
+//                     })
+//                 } else {
+//                     res.status(500).send({
+//                         error: 'failed to authenticate'
+//                     })
+//                 }
+//             }
+//         )
+//     } catch (err) {
+//         res.status(501).send({
+//             error: 'server does not support this functionality'
+//         })
+//     }
+// })
 
 router.get('/userinfo', async (req, res) => {
     try {
