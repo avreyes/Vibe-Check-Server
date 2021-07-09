@@ -5,9 +5,9 @@ const { models } = require('../models');
 
 //TESTING ROUTER//
 
-// router.get('/practice', validateSession, (req,res) => {
-//     res.send('Practice...')
-// });
+router.get('/practice', (req,res) => {
+    res.send('Practice...')
+});
 
 //CREATING NEW POSTS//
 router.post('/create', async (req, res) => {

@@ -18,8 +18,8 @@ app.use('/test', (req,res) => {
 
 
 app.use('/user', controllers.userController);
-app.use(middleware.validateSession);
 app.use('/posts', controllers.postsController);
+app.use(middleware.validateSession);
 app.use('/comments', controllers.commentsController);
 
 
