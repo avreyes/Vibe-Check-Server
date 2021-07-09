@@ -3,7 +3,7 @@ const { models } = require('../models');
 
 const validateSession = async (req, res, next) => {
     if (req.method == 'OPTIONS') {
-        return next()
+        next()
     } else if (
         req.headers.authorization &&
         req.headers.authorization.includes('Bearer')

@@ -1,21 +1,20 @@
 require('dotenv').config();
 
 const express = require('express');
-const app = express();
-app.use(express.json());
 const dbConnection = require('./db');
-
 const controllers = require('./controllers');
 const middleware = require('./middleware');
 
+const app = express();
 
-app.use(middleware.headers);
+app.use(middleware.CORS);
+app.use(express.json());
 
 //TESTING THE ROUTE//
 
-// app.use('/test', (req,res) => {
-//     res.send('Testing.. Testing.. 123..')
-// })
+app.use('/test', (req,res) => {
+    res.send('Testing.. Testing.. 123..')
+})
 
 
 app.use('/user', controllers.userController);
