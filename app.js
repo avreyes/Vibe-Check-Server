@@ -20,8 +20,8 @@ app.use(express.json());
 
 
 app.use('/user', controllers.userController);
-app.use('/posts', controllers.postsController);
 app.use(middleware.validateSession);
+app.use('/posts', controllers.postsController);
 app.use('/comments', controllers.commentsController);
 
 try {
