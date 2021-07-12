@@ -87,6 +87,8 @@ router.post('/login', async (req, res) => {
         })
     }
 });
+
+            //// cannot destructure 'email' req.body.user line 57 ////
 //         .then (
 //             user => {
 //                 if (user) {
