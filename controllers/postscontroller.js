@@ -10,9 +10,9 @@ router.get('/practice', (req,res) => {
 });
 
 //CREATING NEW POSTS//
-router.post('/create', async (req, res) => {
+router.post('/create', validateSession.validateSession, async (req, res) => {
     const { title, date, sign, entry } = req.body.post;
-    //const { id } = req.user;
+    const { id } = req.user;
 
     try {
         await models.PostsModel.create({
@@ -21,7 +21,7 @@ router.post('/create', async (req, res) => {
             sign: sign,
             entry: entry,
             // owner: id,
-            userId: req.user.id
+            userId: id
         })
         .then (
             post => {
