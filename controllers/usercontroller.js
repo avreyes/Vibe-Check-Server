@@ -3,6 +3,7 @@ const { models } = require('../models');
 const { UniqueConstraintError } = require('sequelize/lib/errors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const validateSession = require('../middleware');
 
 router.post('/register', async (req, res) => {
 
@@ -120,9 +121,18 @@ router.post('/login', async (req, res) => {
 //     }
 // })
 
-router.get('/userinfo', async (req, res) => {
+router.get('/:id', validateSession.validateSession, async (req, res) => {
+
+    const id = req.user.id;
+
     try {
-        await models.UserModel.findAll({
+        
+        const userInfo = await models.UserModel.findAll({
+
+            where: {
+                id: id
+            },
+
             include: [
                 {
                     model: models.PostsModel,
@@ -135,10 +145,8 @@ router.get('/userinfo', async (req, res) => {
             ]
         })
         .then (
-            users => {
-                res.status(200).json({
-                    users: users
-                });
+            userInfo => {
+                res.status(200).json(userInfo);
             }
         )
     } catch (err) {

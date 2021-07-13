@@ -20,7 +20,7 @@ router.post('/create', validateSession.validateSession, async (req, res) => {
             date: date,
             sign: sign,
             entry: entry,
-            // owner: id,
+            owner: id,
             userId: id
         })
         .then (
@@ -93,6 +93,22 @@ router.get('/sign/:sign', validateSession.validateSession, async (req, res) => {
         const userPosts = await models.PostsModel.findAll({
             where: {
                 sign: sign
+            }
+        });
+        res.status(200).json(userPosts);
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+//GET POSTS BY UUID//
+
+router.get('/userid/:userId', validateSession.validateSession, async (req, res) => {
+    let userId  = req.params.user.id;
+    try {
+        const userPosts = await models.PostsModel.findAll({
+            where: {
+                userId: userId
             }
         });
         res.status(200).json(userPosts);
