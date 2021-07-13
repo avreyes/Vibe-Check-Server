@@ -8,7 +8,7 @@ router.post('/comment', async (req, res) => {
         await models.CommentsModel.create({
             content: content,
             postId: postId,
-            userId: req.user.id
+            //userId: req.user.id
         })
         .then(
             comment => {
