@@ -121,7 +121,7 @@ router.post('/login', async (req, res) => {
 //     }
 // })
 
-router.get('/:id', validateSession.validateSession, async (req, res) => {
+router.get('/userInfo/:id', validateSession.validateSession, async (req, res) => {
 
     const id = req.user.id;
 
@@ -155,6 +155,47 @@ router.get('/:id', validateSession.validateSession, async (req, res) => {
         });
     };
 });
+
+router.put('/edit/:id', validateSession.validateSession, async (req, res) => {
+    const { firstName, birthday, email, about, zodiac } = res.body.id;
+    const userId = req.user.id;
+
+    const query = {
+        where: {
+            id: userId,
+        }
+    };
+
+    const user = {
+        firstName: firstName,
+        birthday: birthday,
+        email: email,
+        about: about,
+        zodiac: zodiac
+    };
+    try {
+        const update = await models.UserModel.update(user, query);
+        res.status(200).json(update);
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+router.delete('/delete/:id', validateSession.validateSession, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const query = {
+            where:{
+                id: userId
+            }
+        }
+        await models.destroy(query);
+        res.status(200).json({ message: 'User has been deleted ' });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+})
 
 
 module.exports = router;
